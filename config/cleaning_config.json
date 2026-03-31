@@ -1,0 +1,5 @@
+{
+  "app_name": "Data Cleaner App",
+  "default_output_dir": "outputs",
+  "log_file": "logs/app.log"
+}
