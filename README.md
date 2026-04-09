@@ -89,8 +89,12 @@ The cleaning pipeline is dynamically configured through the user interface, allo
 ```text
 data-cleaner-app/
 │
-├── app/
-│   └── streamlit_app.py
+├── backend/
+│   ├── main.py
+│   ├── routes/
+│   │   └── cleaning.py
+│   └── schemas/
+│       └── cleaning.py
 │
 ├── src/
 │   ├── cleaning/
