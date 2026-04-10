@@ -1,0 +1,7 @@
+BACKEND_URL = "http://127.0.0.1:8000"
+APP_TITLE = "🧹 Data Cleaner App"
+APP_PAGE_TITLE = "Data Cleaner App"
+APP_PAGE_ICON = "🧹"
+APP_LAYOUT = "wide"
+DEFAULT_REPORT_FILENAME = "data_profile_report.html"
+DEFAULT_CSV_FILENAME = "cleaned_data.csv"
