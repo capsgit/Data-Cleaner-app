@@ -15,7 +15,7 @@ def main() -> None:
     """Launch the Streamlit application."""
 
     # ruta al archivo de la app
-    app_path = Path("app/streamlit_app.py")
+    app_path = Path("frontend/app.py")
 
     # ejecutar streamlit usando el python actual
     subprocess.run(
