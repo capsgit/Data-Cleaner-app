@@ -1,31 +1,28 @@
-# =========================================================
-# TESTS PARA steps.py
-# =========================================================
-# Idea:
-# - cada función se prueba por separado
-# - usamos DataFrames pequeños (controlados)
-# =========================================================
-
 import pandas as pd
 
 from src.cleaning.steps import (
-    drop_empty_rows,
+    cast_datetime,
     cast_numeric,
-    drop_duplicates,
     drop_columns,
+    drop_duplicates,
+    drop_empty_rows,
     drop_na,
+    remove_repeated_header_rows,
 )
 
 
-# ---------------------------------------------------------
-# TEST 1: drop_empty_rows
-# ---------------------------------------------------------
-# Pseudocódigo:
-# crear df con filas vacías
-# aplicar función
-# comprobar que desaparecen
-# ---------------------------------------------------------
+"""
+Unit tests for individual cleaning steps.
+
+Each function is tested in isolation using small, controlled DataFrames.
+This ensures predictable behavior and simplifies debugging.
+"""
+
+
 def test_drop_empty_rows_removes_fully_empty_rows():
+    """
+    Ensure that rows where all values are NaN are removed.
+    """
     df = pd.DataFrame({
         "A": [1, None, None],
         "B": [2, None, None],
@@ -36,15 +33,29 @@ def test_drop_empty_rows_removes_fully_empty_rows():
     assert len(result) == 1
 
 
-# ---------------------------------------------------------
-# TEST 2: cast_numeric
-# ---------------------------------------------------------
-# Pseudocódigo:
-# columna con números y texto
-# convertir
-# verificar que texto -> NaN
-# ---------------------------------------------------------
+def test_remove_repeated_header_rows_removes_header_like_rows():
+    """
+    Ensure that rows containing repeated header values are removed.
+    """
+    df = pd.DataFrame({
+        "Order ID": ["123", "Order ID", "456"],
+        "Product": ["Cable", "Product", "Phone"],
+    })
+
+    result = remove_repeated_header_rows(
+        df,
+        column="Order ID",
+        header_value="Order ID",
+    )
+
+    assert len(result) == 2
+    assert "Order ID" not in result["Order ID"].values
+
+
 def test_cast_numeric_converts_invalid_values_to_nan():
+    """
+    Ensure that non-numeric values are converted to NaN.
+    """
     df = pd.DataFrame({
         "price": ["10", "20", "abc"]
     })
@@ -54,10 +65,54 @@ def test_cast_numeric_converts_invalid_values_to_nan():
     assert result["price"].isna().sum() == 1
 
 
-# ---------------------------------------------------------
-# TEST 3: drop_duplicates
-# ---------------------------------------------------------
+def test_cast_datetime_converts_invalid_values_to_nat():
+    """
+    Ensure that invalid datetime values are converted to NaT.
+    """
+    df = pd.DataFrame({
+        "Order Date": ["04/19/19 08:46", "invalid"]
+    })
+
+    result = cast_datetime(
+        df,
+        column="Order Date",
+        fmt="%m/%d/%y %H:%M",
+    )
+
+    assert result["Order Date"].isna().sum() == 1
+
+
+def test_drop_na_removes_rows_with_missing_values():
+    """
+    Ensure that rows containing any NaN values are removed.
+    """
+    df = pd.DataFrame({
+        "A": [1, None, 3]
+    })
+
+    result = drop_na(df)
+
+    assert len(result) == 2
+
+
+def test_drop_na_with_subset():
+    """
+    Ensure that drop_na only considers specified columns.
+    """
+    df = pd.DataFrame({
+        "A": [1, None, 3],
+        "B": [None, 2, 3],
+    })
+
+    result = drop_na(df, subset=["A"])
+
+    assert len(result) == 2
+
+
 def test_drop_duplicates_removes_duplicate_rows():
+    """
+    Ensure that duplicate rows are removed.
+    """
     df = pd.DataFrame({
         "A": [1, 1, 2]
     })
@@ -67,10 +122,24 @@ def test_drop_duplicates_removes_duplicate_rows():
     assert len(result) == 2
 
 
-# ---------------------------------------------------------
-# TEST 4: drop_columns
-# ---------------------------------------------------------
+def test_drop_duplicates_with_subset():
+    """
+    Ensure that duplicates are removed based on a subset of columns.
+    """
+    df = pd.DataFrame({
+        "id": [1, 1, 2],
+        "value": ["A", "B", "C"],
+    })
+
+    result = drop_duplicates(df, subset=["id"])
+
+    assert len(result) == 2
+
+
 def test_drop_columns_removes_selected_columns():
+    """
+    Ensure that specified columns are removed from the DataFrame.
+    """
     df = pd.DataFrame({
         "A": [1],
         "B": [2],
@@ -79,16 +148,4 @@ def test_drop_columns_removes_selected_columns():
     result = drop_columns(df, ["B"])
 
     assert "B" not in result.columns
-
-
-# ---------------------------------------------------------
-# TEST 5: drop_na
-# ---------------------------------------------------------
-def test_drop_na_removes_rows_with_missing_values():
-    df = pd.DataFrame({
-        "A": [1, None, 3]
-    })
-
-    result = drop_na(df)
-
-    assert len(result) == 2
+    assert "A" in result.columns
