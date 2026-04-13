@@ -36,23 +36,23 @@ def render_preview_results(result: dict) -> None:
         st.dataframe(preview_df, use_container_width=True)
 
 
-def render_download_buttons(csv_response, html_response) -> None:
-    if csv_response is not None and csv_response.status_code == 200:
+def render_download_buttons(csv_bytes: bytes | None, html_bytes: bytes | None) -> None:
+    """
+    Render download buttons only for files that are already available.
+    """
+    if csv_bytes is not None:
         st.download_button(
             label="📥 Download Cleaned CSV",
-            data=csv_response.content,
+            data=csv_bytes,
             file_name="cleaned_data.csv",
             mime="text/csv",
         )
-    else:
-        st.error("Failed to generate CSV")
 
-    if html_response is not None and html_response.status_code == 200:
+    if html_bytes is not None:
         st.download_button(
             label="📄 Download HTML Report",
-            data=html_response.content,
-            file_name="report.html",
+            data=html_bytes,
+            file_name="data_profile_report.html",
             mime="text/html",
         )
-    else:
-        st.warning("HTML report not available")
+

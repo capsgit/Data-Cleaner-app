@@ -17,7 +17,7 @@ def build_data(payload: dict):
     }
 
 
-def request_cleaning_preview(uploaded_file, payload: dict, timeout: int = 60):
+def request_cleaning_preview(uploaded_file, payload: dict, timeout: int = 120):
     files = build_files(uploaded_file)
     data = build_data(payload)
 

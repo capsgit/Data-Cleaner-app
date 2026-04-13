@@ -146,28 +146,44 @@ data-cleaner-app/
     ydata-profiling (advanced reporting)
     Pytest (testing) 
 ---
-## ▶️ How to Run
+## ▶️ How to run the project
+#### 1. Create a virtual environment
+> python -m venv .venv
 
-### 1️⃣ Create environment
-    python -m venv .venv312
-    .\.venv312\Scripts\Activate.ps1
+#### 2. Activate it
+>PowerShell (Windows):
+>.\.venv\Scripts\Activate.ps1
 
-### 2️⃣ Install dependencies
-    pip install --upgrade pip setuptools wheel
-    pip install -r requirements.txt
+#### 3. Install dependencies
+>pip install --upgrade pip setuptools wheel
+>pip install -r requirements.txt
 
-### 3️⃣ Run backend (FastAPI)
-    uvicorn backend.main:app --reload
+### 🚀 Run the full application (recommended)
 
-#### ➡ Open:
-http://127.0.0.1:8000/docs
+The project provides a development launcher that starts both:
 
-### 4️⃣ Run frontend (Streamlit)
-    python -m streamlit run frontend/app.py
+- FastAPI backend
+- Streamlit frontend
 
-#### ➡ Open:
-http://localhost:8501
+with a single command:
 
+>python run_dev.py
+
+After running:
+
+- Backend → http://127.0.0.1:8000
+- API Docs → http://127.0.0.1:8000/docs
+- Frontend → http://localhost:8501
+
+### ⚙️ Run services separately (optional)
+
+If needed, both services can be started independently:
+
+#### Backend (FastAPI)
+>python -m uvicorn backend.main:app --reload
+
+#### Frontend (Streamlit)
+>python -m streamlit run frontend/app.py
 ---
 ## 🖥️ How to use the app
 
