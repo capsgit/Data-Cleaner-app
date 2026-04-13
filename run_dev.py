@@ -17,6 +17,10 @@ def main() -> None:
         "uvicorn",
         "backend.main:app",
         "--reload",
+        "--reload-dir",
+        "backend",
+        "--reload-dir",
+        "src",
     ]
 
     frontend_cmd = [

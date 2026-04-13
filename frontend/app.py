@@ -115,7 +115,6 @@ if uploaded_file is not None:
     # =====================================================
     # ORIGINAL DATA SECTION
     # =====================================================
-    st.subheader("📄 Original Dataset")
     render_dataset_overview(df)
 
     # =====================================================
@@ -151,12 +150,12 @@ if uploaded_file is not None:
         # =================================================
         st.subheader("📦 Export Options")
 
-        export_col1, export_col2 = st.columns(2)
+        export_col1, export_col2, export_col3, export_col4, export_col5, export_col6 = st.columns(6)
 
-        with export_col1:
+        with export_col5:
             prepare_csv = st.button("Prepare Cleaned CSV")
 
-        with export_col2:
+        with export_col6:
             prepare_html = st.button("Prepare HTML Report")
 
         # -----------------------------------------------

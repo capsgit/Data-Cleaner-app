@@ -7,7 +7,7 @@ def render_file_uploader() -> object:
 
     with center_col:
         uploaded_file = st.file_uploader(
-            label="",
+            label="Upload CSV file",
             type=["csv"],
         )
 

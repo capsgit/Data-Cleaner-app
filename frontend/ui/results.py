@@ -3,7 +3,7 @@ import streamlit as st
 
 
 def render_dataset_overview(df: pd.DataFrame) -> None:
-    st.subheader("📊 Dataset Overview")
+    st.subheader("📅 Dataset Overview")
 
     info_col1, info_col2, info_col3 = st.columns(3)
     info_col1.metric("Rows", df.shape[0])
@@ -11,7 +11,7 @@ def render_dataset_overview(df: pd.DataFrame) -> None:
     info_col3.metric("Duplicated rows", int(df.duplicated().sum()))
 
     with st.expander("📄 Original Data Preview", expanded=True):
-        st.dataframe(df.head(20), use_container_width=True)
+        st.dataframe(df.head(20), width="stretch")
 
 
 def render_preview_results(result: dict) -> None:
@@ -27,13 +27,13 @@ def render_preview_results(result: dict) -> None:
     st.subheader("📋 Applied Steps Summary")
     if result["applied_steps"]:
         summary_df = pd.DataFrame(result["applied_steps"])
-        st.dataframe(summary_df, use_container_width=True)
+        st.dataframe(summary_df, width="stretch")
     else:
         st.info("No cleaning steps were applied.")
 
     with st.expander("🧼 Cleaned Data Preview", expanded=True):
         preview_df = pd.DataFrame(result["preview"])
-        st.dataframe(preview_df, use_container_width=True)
+        st.dataframe(preview_df, width="stretch")
 
 
 def render_download_buttons(csv_bytes: bytes | None, html_bytes: bytes | None) -> None:
