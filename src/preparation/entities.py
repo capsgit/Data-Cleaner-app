@@ -1,6 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+ImputationMethod = Literal[
+    "median",
+    "mode",
+    "constant",
+]
 
 CellStatus = Literal[
     "original",
@@ -41,3 +46,10 @@ class PreparationResult:
     profile_before: dict
     profile_after: dict
     audit_log: list[CellChange] = field(default_factory=list)
+
+@dataclass
+class ImputationConfig:
+    enabled: bool
+    method: ImputationMethod
+    columns: list[str]
+    constant_value: str | int | float | None = None

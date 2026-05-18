@@ -3,10 +3,12 @@ import pandas as pd
 from src.preparation.profiler import profile_dataset
 from src.preparation.audit import AuditLogger
 from src.preparation.entities import (
+    ImputationConfig,
     PreparationResult,
     PreparationSummary,
 )
 
+from src.preparation.imputers import apply_imputation
 from src.preparation.transformations import (
     remove_fully_empty_rows,
 )
@@ -14,7 +16,11 @@ from src.preparation.transformations import (
 
 class PreparationPipeline:
 
-    def run(self, df: pd.DataFrame) -> PreparationResult:
+    def run(
+            self,
+            df: pd.DataFrame,
+            imputation_config: ImputationConfig | None = None,
+    ) -> PreparationResult:
 
         rows_before, cols_before = df.shape
 
@@ -27,6 +33,13 @@ class PreparationPipeline:
             column="age",
             audit=audit,
         )
+
+        if imputation_config is not None:
+            prepared_df = apply_imputation(
+                df=prepared_df,
+                config=imputation_config,
+                audit=audit,
+            )
 
         profile_after = profile_dataset(prepared_df)
 
