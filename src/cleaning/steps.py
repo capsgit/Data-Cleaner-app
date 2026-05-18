@@ -1,5 +1,5 @@
 import pandas as pd
-
+from sklearn.impute import KNNImputer
 
 def drop_empty_rows(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -83,3 +83,66 @@ def drop_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     """
     valid_columns = [col for col in columns if col in df.columns]
     return df.drop(columns=valid_columns, errors="ignore")
+
+
+
+
+# -------------------------
+# ML
+# -------------------------
+def handle_missing_values(
+    df: pd.DataFrame,
+    options,
+    logger=None,
+) -> pd.DataFrame:
+    """
+    Apply the selected missing value strategy to the dataframe.
+    """
+    strategy = options.missing_strategy
+
+    if not strategy:
+        return df
+
+    working_df = df.copy()
+
+    if logger:
+        logger.info("Applying missing value strategy: %s", strategy)
+
+    # Optional: create missing-value indicator columns
+    if getattr(options, "add_missing_flags", False):
+        for col in working_df.columns:
+            if working_df[col].isna().any():
+                working_df[f"{col}_missing"] = working_df[col].isna().astype(int)
+
+    # Mean / median for numeric columns
+    if strategy in {"mean", "median"}:
+        numeric_cols = working_df.select_dtypes(include="number").columns
+
+        for col in numeric_cols:
+            if strategy == "mean":
+                working_df[col] = working_df[col].fillna(working_df[col].mean())
+            else:
+                working_df[col] = working_df[col].fillna(working_df[col].median())
+
+    # Group-based median imputation
+    elif strategy == "group":
+        group_col = options.missing_group_column
+
+        if group_col and group_col in working_df.columns:
+            numeric_cols = working_df.select_dtypes(include="number").columns
+
+            for col in numeric_cols:
+                if col != group_col:
+                    working_df[col] = working_df.groupby(group_col)[col].transform(
+                        lambda x: x.fillna(x.median())
+                    )
+
+    # KNN imputation on numeric columns
+    elif strategy == "knn":
+        numeric_cols = working_df.select_dtypes(include="number").columns
+
+        if len(numeric_cols) > 0:
+            imputer = KNNImputer(n_neighbors=5)
+            working_df[numeric_cols] = imputer.fit_transform(working_df[numeric_cols])
+
+    return working_df

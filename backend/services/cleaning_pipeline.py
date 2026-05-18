@@ -27,6 +27,9 @@ class CleaningPipeline:
             "cols_after": result.cols_after,
             "rows_removed": result.rows_before - result.rows_after,
             "cols_removed": result.cols_before - result.cols_after,
+            "missing_before": result.missing_before,
+            "missing_after": result.missing_after,
+            "values_filled": result.values_filled,
             "applied_steps": result.applied_steps,
             "preview": preview_records,
         }

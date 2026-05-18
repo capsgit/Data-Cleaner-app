@@ -24,6 +24,12 @@ def render_preview_results(result: dict) -> None:
     metric_col3.metric("Columns before", result["cols_before"])
     metric_col4.metric("Columns after", result["cols_after"], delta=cols_delta)
 
+    missing_col1, missing_col2, missing_col3 = st.columns(3)
+
+    missing_col1.metric("Missing values before", result["missing_before"])
+    missing_col2.metric("Missing values after", result["missing_after"])
+    missing_col3.metric("Values filled", result["values_filled"])
+
     st.subheader("📋 Applied Steps Summary")
     if result["applied_steps"]:
         summary_df = pd.DataFrame(result["applied_steps"])

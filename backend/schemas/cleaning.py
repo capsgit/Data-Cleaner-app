@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class CleaningRequest(BaseModel):
@@ -30,3 +31,7 @@ class CleaningRequest(BaseModel):
 
     drop_columns: bool = False
     columns_to_drop: list[str] = Field(default_factory=list)
+
+    missing_strategy: str | None = None
+    missing_group_column: str | None = None
+    add_missing_flags: bool = False

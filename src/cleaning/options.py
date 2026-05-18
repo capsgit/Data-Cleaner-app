@@ -26,3 +26,7 @@ class CleaningOptions:
 
     drop_columns: bool = False
     columns_to_drop: list[str] = field(default_factory=list)
+
+    missing_strategy: str | None = None
+    missing_group_column: str | None = None
+    add_missing_flags: bool = False

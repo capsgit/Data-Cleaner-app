@@ -10,6 +10,7 @@ from src.cleaning.steps import (
     drop_duplicates,
     drop_empty_rows,
     drop_na,
+    handle_missing_values,
     remove_repeated_header_rows,
 )
 
@@ -24,12 +25,15 @@ class CleaningResult:
     rows_after: int
     cols_before: int
     cols_after: int
+    missing_before: int
+    missing_after: int
+    values_filled: int
     applied_steps: list[dict] = field(default_factory=list)
 
 
 class DataCleaner:
     """
-    Pipeline Orchestator.
+    Pipeline orchestrator.
     """
 
     def __init__(self, logger) -> None:
@@ -41,12 +45,14 @@ class DataCleaner:
         options: CleaningOptions,
     ) -> CleaningResult:
         """
-        Aplay cleaning transformations following the options defined on Front-end.
+        Apply cleaning transformations following the options defined in the frontend.
         """
         working_df = df.copy()
 
         rows_before = len(working_df)
         cols_before = len(working_df.columns)
+        missing_before_total = int(working_df.isna().sum().sum())
+
         applied_steps: list[dict] = []
 
         self.logger.info("Starting cleaning pipeline")
@@ -85,6 +91,15 @@ class DataCleaner:
                 ),
             ),
             (
+                "handle_missing_values",
+                bool(options.missing_strategy),
+                lambda current_df: handle_missing_values(
+                    current_df,
+                    options=options,
+                    logger=self.logger,
+                ),
+            ),
+            (
                 "drop_na",
                 options.drop_na,
                 lambda current_df: drop_na(
@@ -116,11 +131,13 @@ class DataCleaner:
 
             before_rows = len(working_df)
             before_cols = len(working_df.columns)
+            before_missing = int(working_df.isna().sum().sum())
 
             working_df = step_func(working_df)
 
             after_rows = len(working_df)
             after_cols = len(working_df.columns)
+            after_missing = int(working_df.isna().sum().sum())
 
             step_summary = {
                 "step": step_name,
@@ -130,17 +147,25 @@ class DataCleaner:
                 "cols_before": before_cols,
                 "cols_after": after_cols,
                 "cols_removed": before_cols - after_cols,
+                "missing_before": before_missing,
+                "missing_after": after_missing,
+                "missing_delta": before_missing - after_missing,
             }
             applied_steps.append(step_summary)
 
             self.logger.info(
-                "%s | rows: %s -> %s | cols: %s -> %s",
+                "%s | rows: %s -> %s | cols: %s -> %s | missing: %s -> %s",
                 step_name,
                 before_rows,
                 after_rows,
                 before_cols,
                 after_cols,
+                before_missing,
+                after_missing,
             )
+
+        missing_after_total = int(working_df.isna().sum().sum())
+        values_filled = max(0, missing_before_total - missing_after_total)
 
         result = CleaningResult(
             cleaned_df=working_df,
@@ -148,6 +173,9 @@ class DataCleaner:
             rows_after=len(working_df),
             cols_before=cols_before,
             cols_after=len(working_df.columns),
+            missing_before=missing_before_total,
+            missing_after=missing_after_total,
+            values_filled=values_filled,
             applied_steps=applied_steps,
         )
 

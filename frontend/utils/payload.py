@@ -14,6 +14,9 @@ def build_cleaning_payload(
     duplicate_subset: list[str],
     drop_columns_option: bool,
     columns_to_drop: list[str],
+    missing_strategy: str,
+    missing_group_column: str,
+    add_missing_flags: bool,
 ) -> dict:
     return {
         "drop_empty_rows": drop_empty_rows_option,
@@ -31,4 +34,7 @@ def build_cleaning_payload(
         "duplicate_subset": duplicate_subset,
         "drop_columns": drop_columns_option,
         "columns_to_drop": columns_to_drop,
+        "missing_strategy": missing_strategy,
+        "missing_group_column": missing_group_column,
+        "add_missing_flags": add_missing_flags,
     }

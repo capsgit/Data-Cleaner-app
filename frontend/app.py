@@ -95,6 +95,9 @@ if uploaded_file is not None:
         duplicate_subset=sidebar_values["duplicate_subset"],
         drop_columns_option=sidebar_values["drop_columns_option"],
         columns_to_drop=sidebar_values["columns_to_drop"],
+        missing_strategy=sidebar_values["missing_strategy"],
+        missing_group_column=sidebar_values["missing_group_column"],
+        add_missing_flags=sidebar_values["add_missing_flags"],
     )
 
     # =====================================================

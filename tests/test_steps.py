@@ -149,3 +149,18 @@ def test_drop_columns_removes_selected_columns():
 
     assert "B" not in result.columns
     assert "A" in result.columns
+
+
+def test_missing_mean_imputation():
+    import pandas as pd
+    from src.cleaning.steps import handle_missing_values
+
+    df = pd.DataFrame({"a": [1, None, 3]})
+
+    class Opt:
+        missing_strategy = "mean"
+        missing_group_column = None
+
+    result = handle_missing_values(df, Opt(), logger=None)
+
+    assert result["a"].isna().sum() == 0

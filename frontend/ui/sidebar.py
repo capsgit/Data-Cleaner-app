@@ -71,6 +71,30 @@ def render_cleaning_sidebar(columns: list[str]) -> dict:
             )
 
         st.divider()
+        st.subheader("🔮 Missing Values Strategy")
+
+        missing_strategy = st.selectbox(
+            "Strategy",
+            options=[
+                None,
+                "mean",
+                "median",
+                "group",
+                "knn",
+            ],
+        )
+
+        missing_group_column = None
+
+        if missing_strategy == "group":
+            missing_group_column = st.selectbox(
+                "Group column",
+                options=columns,
+            )
+
+        add_missing_flags = st.checkbox("Add missing value indicator columns")
+
+        st.divider()
 
         run_cleaning = st.button(
             "▶ Run Cleaning",
@@ -110,4 +134,8 @@ def render_cleaning_sidebar(columns: list[str]) -> dict:
         "drop_columns_option": drop_columns_option,
         "columns_to_drop": columns_to_drop,
         "run_cleaning": run_cleaning,
+        "missing_strategy": missing_strategy,
+        "missing_group_column": missing_group_column,
+        "add_missing_flags": add_missing_flags,
     }
+
