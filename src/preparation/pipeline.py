@@ -1,26 +1,26 @@
 import pandas as pd
 
-from src.preparation.profiler import profile_dataset
 from src.preparation.audit import AuditLogger
 from src.preparation.entities import (
     ImputationConfig,
     PreparationResult,
     PreparationSummary,
+    ValidationIssue,
 )
-
 from src.preparation.imputers import apply_imputation
-from src.preparation.transformations import (
-    remove_fully_empty_rows,
-)
+from src.preparation.profiler import profile_dataset
+from src.preparation.transformations import remove_fully_empty_rows
 
 
 class PreparationPipeline:
 
     def run(
-            self,
-            df: pd.DataFrame,
-            imputation_config: ImputationConfig | None = None,
+        self,
+        df: pd.DataFrame,
+        imputation_config: ImputationConfig | None = None,
     ) -> PreparationResult:
+
+        issues: list[ValidationIssue] = []
 
         rows_before, cols_before = df.shape
 
@@ -30,7 +30,6 @@ class PreparationPipeline:
 
         prepared_df = remove_fully_empty_rows(
             df=df,
-            column="age",
             audit=audit,
         )
 
@@ -39,6 +38,7 @@ class PreparationPipeline:
                 df=prepared_df,
                 config=imputation_config,
                 audit=audit,
+                issues=issues,
             )
 
         profile_after = profile_dataset(prepared_df)
@@ -59,4 +59,5 @@ class PreparationPipeline:
             profile_before=profile_before,
             profile_after=profile_after,
             audit_log=audit.get_changes(),
+            issues=issues,
         )

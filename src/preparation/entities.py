@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any, Literal
+from typing import Literal
 
 ImputationMethod = Literal[
     "median",
@@ -40,12 +41,23 @@ class PreparationSummary:
 
 
 @dataclass
+class ValidationIssue:
+    row_id: int | None
+    column: str | None
+    issue_type: str
+    severity: Literal["info", "warning", "error"]
+    message: str
+
+
+@dataclass
 class PreparationResult:
     dataframe: Any
     summary: PreparationSummary
     profile_before: dict
     profile_after: dict
     audit_log: list[CellChange] = field(default_factory=list)
+    issues: list[ValidationIssue] = field(default_factory=list)
+
 
 @dataclass
 class ImputationConfig:

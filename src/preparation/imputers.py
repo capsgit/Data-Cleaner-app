@@ -1,9 +1,11 @@
 import pandas as pd
 
+from src.preparation.validators import validate_numeric_column
 from src.preparation.audit import AuditLogger
 from src.preparation.entities import (
     CellChange,
     ImputationConfig,
+    ValidationIssue,
 )
 
 
@@ -105,6 +107,7 @@ def apply_imputation(
     df: pd.DataFrame,
     config: ImputationConfig,
     audit: AuditLogger,
+    issues: list[ValidationIssue],
 ) -> pd.DataFrame:
 
     if not config.enabled:
@@ -116,13 +119,26 @@ def apply_imputation(
             continue
 
         if config.method == "median":
+            print("11111", column, df[column].dtype, validate_numeric_column(df, column))
+
+            if not validate_numeric_column(df, column):
+                issues.append(
+                    ValidationIssue(
+                        row_id=None,
+                        column=column,
+                        issue_type="INVALID_IMPUTATION_METHOD",
+                        severity="error",
+                        message="Median imputation requires a numeric column",
+                    )
+                )
+                continue
 
             df = fill_numeric_median(
                 df=df,
                 column=column,
                 audit=audit,
             )
-
+            print("1", column, df[column].dtype, validate_numeric_column(df, column))
         elif config.method == "mode":
 
             df = fill_with_mode(
