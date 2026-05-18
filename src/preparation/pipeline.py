@@ -1,5 +1,6 @@
 import pandas as pd
 
+from src.preparation.profiler import profile_dataset
 from src.preparation.audit import AuditLogger
 from src.preparation.entities import (
     PreparationResult,
@@ -19,10 +20,15 @@ class PreparationPipeline:
 
         audit = AuditLogger()
 
+        profile_before = profile_dataset(df)
+
         prepared_df = remove_fully_empty_rows(
             df=df,
+            column="age",
             audit=audit,
         )
+
+        profile_after = profile_dataset(prepared_df)
 
         rows_after, cols_after = prepared_df.shape
 
@@ -37,5 +43,7 @@ class PreparationPipeline:
         return PreparationResult(
             dataframe=prepared_df,
             summary=summary,
+            profile_before=profile_before,
+            profile_after=profile_after,
             audit_log=audit.get_changes(),
         )

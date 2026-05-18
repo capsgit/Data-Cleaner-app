@@ -38,4 +38,6 @@ class PreparationSummary:
 class PreparationResult:
     dataframe: Any
     summary: PreparationSummary
+    profile_before: dict
+    profile_after: dict
     audit_log: list[CellChange] = field(default_factory=list)

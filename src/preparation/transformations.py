@@ -6,6 +6,7 @@ from src.preparation.entities import CellChange
 
 def remove_fully_empty_rows(
     df: pd.DataFrame,
+    column: str,
     audit: AuditLogger,
 ) -> pd.DataFrame:
 
